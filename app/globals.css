@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 1. Global Background: Pure White */
+    --background: 0 0% 100%;
+    
+    /* 2. Navbar Background: Soft Beige (Naya Variable) */
+    --navbar-bg: 40 33% 96%;
+
+    /* Text: Black/Dark Grey */
+    --foreground: 0 0% 20%;
+
+    /* Primary: Deep Maroon (Headings, Links, Buttons) */
+    --primary: 350 80% 35%;
+    --primary-foreground: 45 60% 90%; /* Text on Maroon button */
+
+    /* Secondary: Gold (Search bar button etc) */
+    --secondary: 45 70% 50%;
+    --secondary-foreground: 350 80% 25%;
+
+    /* Inputs/Search Bar Borders: Gold */
+    --input: 45 70% 50%; 
+    --border: 45 60% 80%; /* Light Gold for general borders */
+    --ring: 45 70% 50%; /* Focus ring also Gold */
+
+    /* Other Shadcn variables */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+    --muted: 40 20% 95%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 45 60% 90%;
+    --accent-foreground: 350 80% 35%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Headings Maroon */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-primary font-bold;
+  }
+
+  /* Links Maroon by default (optionally add hover effect) */
+  a {
+    @apply text-primary hover:text-secondary transition-colors;
+  }
+}
+
+/* Custom Utility for Navbar */
+@layer utilities {
+  .bg-navbar {
+    background-color: hsl(var(--navbar-bg));
+  }
+  /* Search Bar Specific Style */
+  .input-gold {
+    @apply border-2 border-secondary bg-white text-black placeholder:text-gray-400 focus-visible:ring-secondary;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+}
