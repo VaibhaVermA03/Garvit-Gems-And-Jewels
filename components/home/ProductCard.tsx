@@ -5,31 +5,43 @@ import Link from "next/link";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Product, useCartStore, useWishlistStore } from "@/lib/store";
+import { useCartStore, useWishlistStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { toast } from "sonner";
+// --- FIX 1: Import type from Prisma Client ---
+import { Product } from "@prisma/client";
 
 interface ProductCardProps {
   product: Product;
 }
 
+// --- FIX 2: Helper to prevent Image Crash ---
+const getImageUrl = (image: string | null) => {
+  if (!image) return "/placeholder.jpg";
+  if (image.startsWith("http") || image.startsWith("/")) {
+    return image;
+  }
+  return `/${image}`;
+};
+
 export default function ProductCard({ product }: ProductCardProps) {
   const addToCart = useCartStore((state) => state.addItem);
   const addToWishlist = useWishlistStore((state) => state.addItem);
+  // 'as any' fix: Store aur Prisma ke types slight match nahi karte kabhi kabhi
   const isInWishlist = useWishlistStore((state) => state.isInWishlist(product.id));
   const [wishlistClicked, setWishlistClicked] = useState(false);
 
   const handleWishlistClick = () => {
-    addToWishlist(product);
+    addToWishlist(product as any);
     setWishlistClicked(true);
     setTimeout(() => setWishlistClicked(false), 500);
   };
 
   const handleAddToCart = async () => {
     try {
-      await addToCart(product);
+      await addToCart(product as any);
       toast.success(`${product.name} added to cart!`);
     } catch (error: any) {
       toast.error(error.message || 'Failed to add to cart');
@@ -45,14 +57,17 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="relative aspect-square overflow-hidden bg-muted">
           <Link href={`/products/${product.id}`} className="block w-full h-full">
             <Image
-              src={product.image}
+              // --- FIX 3: Using helper function here ---
+              src={getImageUrl(product.image)}
               alt={product.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-110"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           </Link>
-          {product.originalPrice && (
+          
+          {/* Sale Badge */}
+          {product.originalPrice && product.originalPrice > product.price && (
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -61,6 +76,8 @@ export default function ProductCard({ product }: ProductCardProps) {
               SALE
             </motion.div>
           )}
+
+          {/* Wishlist Button */}
           <motion.div
             className="absolute top-2 right-2 z-10"
             initial={{ opacity: 0, scale: 0.8 }}
@@ -81,6 +98,8 @@ export default function ProductCard({ product }: ProductCardProps) {
               />
             </Button>
           </motion.div>
+
+          {/* Add to Cart Button */}
           <motion.div
             className="absolute bottom-2 left-2 right-2 z-10"
             initial={{ opacity: 0, y: 10 }}
@@ -97,13 +116,14 @@ export default function ProductCard({ product }: ProductCardProps) {
             </Button>
           </motion.div>
         </div>
+
         <CardContent className="p-4">
           <Link href={`/products/${product.id}`}>
             <h3 className="font-semibold mb-2 hover:text-primary transition-colors line-clamp-2">
               {product.name}
             </h3>
           </Link>
-          {product.rating && (
+          {product.rating ? (
             <div className="flex items-center gap-1 mb-2">
               {[...Array(5)].map((_, i) => (
                 <Star
@@ -118,14 +138,15 @@ export default function ProductCard({ product }: ProductCardProps) {
                 ({product.rating})
               </span>
             </div>
-          )}
+          ) : null}
         </CardContent>
+        
         <CardFooter className="p-4 pt-0 flex justify-between items-center">
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold">₹{product.price}</span>
-            {product.originalPrice && (
+            <span className="text-lg font-bold">₹{String(product.price)}</span>
+            {product.originalPrice && product.originalPrice > product.price && (
               <span className="text-sm text-muted-foreground line-through">
-                ₹{product.originalPrice}
+                ₹{String(product.originalPrice)}
               </span>
             )}
           </div>

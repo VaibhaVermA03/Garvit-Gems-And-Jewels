@@ -29,8 +29,10 @@ export default function ShopPage() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/products");
+        // --- FIX: Added '?limit=1000' to fetch ALL products (default was 20) ---
+        const response = await fetch("/api/products?limit=1000");
         const data = await response.json();
+        
         if (data.success && data.data) {
           setProducts(data.data);
           // Set max price range based on actual products
