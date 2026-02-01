@@ -5,7 +5,7 @@ A modern, high-performance e-commerce application built with Next.js 16, TypeScr
 ## 📦 Previous Version
 
 The legacy static version of this application is available at:
-- **Live URL**: [https://jewellery-ecom-static.netlify.app/index.html](https://jewellery-ecom-static.netlify.app/index.html)
+- **Live URL**: https://garvitgemsandjewels.vercel.app/
 - **GitHub Branch**: `oldmasterbranch` - Contains the previous static HTML/CSS/JS implementation
 
 The current repository (Next.js version) is on the `master` branch.
